@@ -16,6 +16,13 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
 	}
+
+	// database := db.Create()
+	//
+	// if err := database.Ping(); err != nil {
+	// 	log.Fatal(err)
+	// }
+
 	router := chi.NewMux()
 
 	router.Use(middleware.RequestID)
@@ -24,7 +31,7 @@ func main() {
 
 	router.Get("/customer/{id}", handler.Make(handler.HandleGetCustomer))
 	router.Post("/upload", handler.Make(handler.HandleUpload))
-	router.Post("/file", handler.Make(handler.HandleUpload))
+	router.Post("/file", handler.Make(handler.HandleCreateFileUpload))
 
 	listenAddr := os.Getenv("LISTEN_ADDR")
 	slog.Info("API server running", "addr", listenAddr)
