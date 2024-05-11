@@ -1,16 +1,46 @@
 package handler
 
 import (
-	"bytes"
+	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"uwe/types"
+
+	"github.com/google/uuid"
 )
 
-const maxFileSize = 10 << 20
+type CreateFileUploadRequest struct {
+	FileType types.FileType `json:"file_type,omitempty"`
+	Mapping  map[string]int `json:"mapping,omitempty"`
+}
 
-func handleUpload(w http.ResponseWriter, r *http.Request) error {
+type CreateFileUploadResponse struct {
+	ID uuid.UUID `json:"id"`
+}
+
+func HandleCreateFileUpload(w http.ResponseWriter, r *http.Request) error {
+	var req CreateFileUploadRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		return err
+	}
+
+	fileUpload := types.FileUpload{
+		ID:      uuid.New(),
+		Type:    req.FileType,
+		Mapping: req.Mapping,
+	}
+
+	resp := CreateFileUploadResponse{
+		ID: fileUpload.ID,
+	}
+
+	return writeJSON(w, http.StatusCreated, resp)
+}
+
+func HandleUpload(w http.ResponseWriter, r *http.Request) error {
 	// do some checks
 	subs, err := processSubscriptions(r.Body)
 	if err != nil {
@@ -21,14 +51,29 @@ func handleUpload(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func processSubscriptions(r io.Reader) ([]types.Subscription, error) {
-	buf := new(bytes.Buffer)
-	_, err := buf.ReadFrom(r)
-	if err != nil {
-		return nil, err
-	}
+type Mapping struct {
+	Amount     int
+	Currency   int
+	Period     int
+	VAT        int
+	StartedAt  int
+	CanceledAt int
+	ExternalId int
+}
 
-	fmt.Println(buf.String())
+func processSubscriptions(r io.Reader) ([]types.Subscription, error) {
+	reader := csv.NewReader(r)
+
+	for {
+		record, err := reader.Read()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return nil, err
+		}
+		fmt.Println(record)
+	}
 
 	return nil, nil
 }
