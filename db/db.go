@@ -10,7 +10,11 @@ import (
 	"github.com/uptrace/bun/driver/pgdriver"
 )
 
-func Create() *bun.DB {
+type DB struct {
+	*bun.DB
+}
+
+func Create() DB {
 	{
 		var (
 			host     = os.Getenv("DB_HOST")
@@ -27,6 +31,6 @@ func Create() *bun.DB {
 
 		sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 
-		return bun.NewDB(sqldb, pgdialect.New())
+		return DB{bun.NewDB(sqldb, pgdialect.New())}
 	}
 }
