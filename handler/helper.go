@@ -2,17 +2,18 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 )
 
 type APIError struct {
-	StatusCode int
-	Msg        string
+	StatusCode int `json:"status_code,omitempty"`
+	Msg        any `json:"msg,omitempty"`
 }
 
 func (e APIError) Error() string {
-	return e.Msg
+	return fmt.Sprintf("api error: %d", e.StatusCode)
 }
 
 func NewApiError(statusCode int, err error) APIError {
@@ -20,6 +21,17 @@ func NewApiError(statusCode int, err error) APIError {
 		StatusCode: statusCode,
 		Msg:        err.Error(),
 	}
+}
+
+func InvalidRequestData(errors map[string]string) APIError {
+	return APIError{
+		StatusCode: http.StatusBadRequest,
+		Msg:        errors,
+	}
+}
+
+func InvalidJSON() APIError {
+	return NewApiError(http.StatusBadRequest, fmt.Errorf("invalid JSON Request data"))
 }
 
 type APIFunc func(w http.ResponseWriter, r *http.Request) error

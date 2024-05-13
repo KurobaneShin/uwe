@@ -33,13 +33,13 @@ func NewCustomerHandler(db db.DB) *CustomerHandler {
 func (h *CustomerHandler) HandleCreateCustomer(w http.ResponseWriter, r *http.Request) error {
 	var req CreateCustomerRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		return err
+		return InvalidJSON()
 	}
 
 	defer r.Body.Close()
 
 	if errors := req.validate(); len(errors) > 0 {
-		return writeJSON(w, http.StatusBadRequest, errors)
+		return InvalidRequestData(errors)
 	}
 
 	customer := types.Customer{

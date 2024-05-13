@@ -25,5 +25,5 @@ db-reset:
 migration-new:
 	@GOOSE_MIGRATION_DIR=$(migrationPath) goose create $(filter-out $@,$(MAKECMDGOALS))
 
-docker-up:
- docker run --name postgres -e POSTGRES_PASSWORD=foobarbaz -p 5432:5432 -d postgres 
+# docker-up:
+#  docker run --name postgres -e POSTGRES_PASSWORD=foobarbaz -p 5432:5432 -d postgres 
