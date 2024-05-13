@@ -20,12 +20,15 @@ func main() {
 
 	db := db.Create()
 	uploadHandler := handler.NewUploadHandler(db)
+	customerHandler := handler.NewCustomerHandler(db)
 
 	router := chi.NewMux()
 
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
 	router.Use(middleware.Recoverer)
+
+	router.Post("/customer", handler.Make(customerHandler.HandleCreateCustomer))
 
 	router.Get("/customer/{id}", handler.Make(handler.HandleGetCustomer))
 	router.Post("/file", handler.Make(uploadHandler.HandleCreateFileUpload))

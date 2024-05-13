@@ -1,10 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE file_uploads(
-  id UUID NOT NULL PRIMARY KEY,
-  customer_id uuid references customers,
-  "type" int NOT NULL,
-  mapping jsonb default '{}',
+CREATE TABLE accounts (
+  id serial NOT NULL primary key,
   created_at timestamp default 'now()',
   updated_at timestamp,
   deleted_at timestamp
@@ -13,5 +10,5 @@ CREATE TABLE file_uploads(
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE file_uploads;
+DROP TABLE accounts;
 -- +goose StatementEnd
