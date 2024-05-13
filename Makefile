@@ -10,6 +10,9 @@ build:
 test:
 	@go test ./... -v
 
+seed:
+	@go run cmd/seed/main.go
+
 db-status:
 	@GOOSE_DRIVER=postgres GOOSE_DBSTRING=$(dsn) goose -dir=$(migrationPath) status
 

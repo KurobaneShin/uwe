@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"uwe/db"
 	"uwe/handler"
 
 	chi "github.com/go-chi/chi/v5"
@@ -17,11 +18,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// database := db.Create()
-	//
-	// if err := database.Ping(); err != nil {
-	// 	log.Fatal(err)
-	// }
+	db := db.Create()
+	uploadHandler := handler.NewUploadHandler(db)
 
 	router := chi.NewMux()
 
@@ -30,10 +28,10 @@ func main() {
 	router.Use(middleware.Recoverer)
 
 	router.Get("/customer/{id}", handler.Make(handler.HandleGetCustomer))
-	router.Post("/upload", handler.Make(handler.HandleUpload))
-	router.Post("/file", handler.Make(handler.HandleCreateFileUpload))
+	router.Post("/file", handler.Make(uploadHandler.HandleCreateFileUpload))
+	router.Post("/file/{id}", handler.Make(uploadHandler.HandleFileUpload))
 
 	listenAddr := os.Getenv("LISTEN_ADDR")
 	slog.Info("API server running", "addr", listenAddr)
-	http.ListenAndServe(listenAddr, router)
+	log.Fatal(http.ListenAndServe(listenAddr, router))
 }
