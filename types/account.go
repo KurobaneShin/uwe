@@ -1,7 +1,7 @@
 package types
 
 type Account struct {
-	ID        int
+	ID        int `bun:"id,pk,autoincrement"`
 	AccountID int
 	Timestamps
 }
