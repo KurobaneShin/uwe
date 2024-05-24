@@ -5,12 +5,13 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"uwe/db"
-	"uwe/handler"
 
 	chi "github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
+
+	"uwe/db"
+	"uwe/handler"
 )
 
 func main() {
@@ -28,11 +29,13 @@ func main() {
 	router.Use(middleware.RealIP)
 	router.Use(middleware.Recoverer)
 
-	router.Post("/customer", handler.Make(customerHandler.HandleCreateCustomer))
+	router.Group(func(api chi.Router) {
+		api.Post("/customer", handler.Make(customerHandler.HandleCreateCustomer))
 
-	router.Get("/customer/{id}", handler.Make(handler.HandleGetCustomer))
-	router.Post("/file", handler.Make(uploadHandler.HandleCreateFileUpload))
-	router.Post("/file/{id}", handler.Make(uploadHandler.HandleFileUpload))
+		api.Get("/customer/{id}", handler.Make(handler.HandleGetCustomer))
+		api.Post("/file", handler.Make(uploadHandler.HandleCreateFileUpload))
+		api.Post("/file/{id}", handler.Make(uploadHandler.HandleFileUpload))
+	})
 
 	listenAddr := os.Getenv("LISTEN_ADDR")
 	slog.Info("API server running", "addr", listenAddr)
