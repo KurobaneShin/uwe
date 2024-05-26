@@ -6,15 +6,31 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"uwe/db"
-	"uwe/types"
 
 	"github.com/google/uuid"
+
+	"uwe/db"
+	"uwe/types"
 )
 
 type CreateFileUploadRequest struct {
-	FileType types.FileType `json:"file_type,omitempty"`
-	Mapping  map[string]int `json:"mapping,omitempty"`
+	FileType   types.FileType `json:"file_type,omitempty"`
+	CustomerId uuid.UUID      `json:"customerId,omitempty"`
+	Mapping    map[string]int `json:"mapping,omitempty"`
+}
+
+func (r CreateFileUploadRequest) validate() map[string]string {
+	errors := map[string]string{}
+
+	if r.CustomerId == types.UUIDZERO {
+		errors["customerId"] = "invalid customer id"
+	}
+
+	if r.FileType != types.FileTypeSubscription {
+		errors["fileType"] = "invalid file type"
+	}
+
+	return errors
 }
 
 type CreateFileUploadResponse struct {
@@ -38,10 +54,15 @@ func (h *UploadHandler) HandleCreateFileUpload(w http.ResponseWriter, r *http.Re
 		return err
 	}
 
+	if errors := req.validate(); len(errors) != 0 {
+		return InvalidRequestData(errors)
+	}
+
 	fileUpload := types.FileUpload{
-		ID:      uuid.New(),
-		Type:    req.FileType,
-		Mapping: req.Mapping,
+		ID:         uuid.New(),
+		Type:       req.FileType,
+		CustomerId: req.CustomerId,
+		Mapping:    req.Mapping,
 	}
 
 	if err := h.db.CreateFileUpload(&fileUpload); err != nil {

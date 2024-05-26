@@ -46,6 +46,7 @@ func (h *CustomerHandler) HandleCreateCustomer(w http.ResponseWriter, r *http.Re
 	account := AuthenticatedAccount(r)
 
 	customer := types.Customer{
+		Id:        uuid.New(),
 		AccountId: account.ID,
 		Name:      req.Name,
 	}

@@ -5,8 +5,8 @@ import (
 )
 
 type Customer struct {
-	Id        uuid.UUID
-	Name      string
-	AccountId int
+	Id        uuid.UUID `json:"id,omitempty" bun:"id,pk"`
+	Name      string    `json:"name,omitempty"`
+	AccountId int       `json:"-"`
 	Timestamps
 }
