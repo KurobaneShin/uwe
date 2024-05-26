@@ -3,11 +3,12 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
-	"uwe/db"
-	"uwe/types"
 
 	chi "github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+
+	"uwe/db"
+	"uwe/types"
 )
 
 type CreateCustomerRequest struct {
@@ -42,8 +43,10 @@ func (h *CustomerHandler) HandleCreateCustomer(w http.ResponseWriter, r *http.Re
 		return InvalidRequestData(errors)
 	}
 
+	account := AuthenticatedAccount(r)
+
 	customer := types.Customer{
-		AccountId: 1,
+		AccountId: account.ID,
 		Name:      req.Name,
 	}
 

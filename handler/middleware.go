@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 
 	"uwe/db"
@@ -15,13 +16,14 @@ func WithAuthentication(db db.DB) func(next http.Handler) http.Handler {
 				return
 			}
 
-			_, err := db.GetAccountByAPIKey(apiKey)
+			account, err := db.GetAccountByAPIKey(apiKey)
 			if err != nil {
 				writeUnAuthorized(w)
 				return
-
 			}
-			next.ServeHTTP(w, r)
+
+			ctx := context.WithValue(r.Context(), "account", account)
+			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
 }

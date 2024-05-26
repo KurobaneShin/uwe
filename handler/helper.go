@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+
+	"uwe/types"
 )
 
 type APIError struct {
@@ -61,4 +63,12 @@ func writeJSON(w http.ResponseWriter, status int, v any) error {
 	w.WriteHeader(status)
 	w.Header().Set("Content-Type", "application/json")
 	return json.NewEncoder(w).Encode(v)
+}
+
+func AuthenticatedAccount(r *http.Request) types.Account {
+	account, ok := r.Context().Value("account").(types.Account)
+	if !ok {
+		return types.Account{}
+	}
+	return account
 }
