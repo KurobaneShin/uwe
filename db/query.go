@@ -17,6 +17,7 @@ func (db DB) GetAccountByAPIKey(apiKey string) (types.Account, error) {
 		Model(&account).
 		Join("JOIN api_keys as keys on keys.account_id = account.id").
 		Where("keys.active", true).
+		Where("keys.key = ?", apiKey).
 		Scan(context.Background())
 	return account, err
 }
