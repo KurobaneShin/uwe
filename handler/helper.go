@@ -30,6 +30,10 @@ func InvalidRequestData(errors map[string]string) APIError {
 	}
 }
 
+func UnAuthorized() APIError {
+	return NewApiError(http.StatusUnauthorized, fmt.Errorf("unauthorized"))
+}
+
 func InvalidJSON() APIError {
 	return NewApiError(http.StatusBadRequest, fmt.Errorf("invalid JSON Request data"))
 }
