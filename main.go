@@ -30,7 +30,7 @@ func main() {
 	router.Use(middleware.Recoverer)
 
 	router.Group(func(api chi.Router) {
-		router.Use(handler.WithAuthentication)
+		router.Use(handler.WithAuthentication(db))
 		api.Post("/customer", handler.Make(customerHandler.HandleCreateCustomer))
 
 		api.Get("/customer/{id}", handler.Make(handler.HandleGetCustomer))

@@ -3,11 +3,23 @@ package db
 import (
 	"context"
 	"database/sql"
-	"uwe/types"
 
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
+
+	"uwe/types"
 )
+
+func (db DB) GetAccountByAPIKey(apiKey string) (types.Account, error) {
+	var account types.Account
+
+	err := db.NewSelect().
+		Model(&account).
+		Join("JOIN api_keys as keys on keys.account_id = account.id").
+		Where("keys.active", true).
+		Scan(context.Background())
+	return account, err
+}
 
 func (db *DB) CreateAccount(account *types.Account) error {
 	return db.RunInTx(context.Background(), &sql.TxOptions{}, func(ctx context.Context, tx bun.Tx) error {

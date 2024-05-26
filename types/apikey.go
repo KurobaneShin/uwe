@@ -10,7 +10,7 @@ type ApiKey struct {
 	Key       string
 	Name      string
 	AccountId int
-	Disabled  bool
+	Active    bool
 	Timestamps
 }
 

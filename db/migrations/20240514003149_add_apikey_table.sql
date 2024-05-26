@@ -5,7 +5,7 @@ CREATE TABLE api_keys (
 id serial not null primary key,
 name text NOT NULL,
 key text not null,
-disabled boolean default false,
+active boolean default true,
 account_id int references accounts(id),
 created_at timestamp default 'now()',
 updated_at timestamp,
